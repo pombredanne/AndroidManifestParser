@@ -15,6 +15,8 @@ con.setFormatter(formatter)
 lg.addHandler(con)
 
 
+### UTILS
+
 # Strip NS
 def sanitize(d):
 
@@ -28,13 +30,82 @@ def sanitize(d):
 
 
 # Writeline + flush
-def write(f, l):
+def write(f, l, i=0):
 
-    f.write('%s\n' % l)
+    f.write("\t"*i+'%s\n' % l)
     f.flush()
 
 
+# Find headers:
+def headers(dictList):
+
+    h = []
+
+    for d in dictList:
+        h = list(set(h + d.keys()))
+
+    return h
+
+
 ### Formatters
+
+# HTML
+def formatHTML(results, outfile):
+
+    write(outfile, '<html>')
+    write(outfile, '<head>', 1)
+    write(outfile, '<title>AndroidManifest.xml parsing results</title>',2)
+    write(outfile, '<style type="text/css">', 3)
+    write(outfile, 'body { font-family: "Tahoma"; }', 4)
+    write(outfile, 'table { border-spacing: 0; border-collapse: collapse;}', 4)
+    write(outfile, 'table td { border: 1px solid rgb(80, 48, 120); }', 4)
+    write(outfile, 'td { padding:10px; }', 4)
+    write(outfile, 'tr:first-child { background: rgb(80, 48, 120); text-align:center; font-weight: bold; color: white;}', 4)
+    write(outfile, 'tr:first-child td { border-left: 1px solid white; border-right: 1px solid white; }', 4)
+    write(outfile, 'tr:first-child td:first-child { border-left: 1px solid rgb(80, 48, 120); }')
+    write(outfile, 'tr:first-child td:last-child { border-right: 1px solid rgb(80, 48, 120); }')
+    write(outfile, '</style>', 3)
+    write(outfile, '</head>', 1)
+    write(outfile, '<body>', 1)
+    oResults = collections.OrderedDict(sorted(results.items()))
+
+    for category, dicts in oResults.items():
+
+        write(outfile, '<h2>%s</h2>' % category, 2)
+
+        if len(dicts):
+
+            write(outfile, '<table>', 2)
+            write(outfile, '<tr>', 3)
+
+            hdr = headers(dicts)
+            for h in hdr:
+                write(outfile, '<td>%s</td>' % h.replace('!', ''), 4)
+
+            write(outfile, '</tr>', 3)
+
+            for i in range(0, len(dicts)):
+
+                write(outfile, '<tr>', 3)
+
+                for h in hdr:
+
+                    data = '' if not h in dicts[i].keys() else dicts[i][h]
+                    write(outfile, '<td>%s</td>' % str(data).replace(', ', '<br />'), 4)
+
+                write(outfile, '</tr>', 3)
+
+        else:
+            write(outfile, '<i>No data</i>', 2)
+
+        write(outfile, '</table>', 2)
+        write(outfile, '<br />', 2)
+
+    write(outfile, '</body>', 1)
+    write(outfile, '</html>')
+
+
+
 
 # Text
 def formatText(results, outfile):
@@ -332,6 +403,7 @@ if __name__=='__main__':
 
     formats = {
             'TEXT': formatText,
+            'HTML': formatHTML,
     }
     ap.add_argument('-f', '--format', metavar='FMT', dest='format', default='TEXT', help='Output format, default is TEXT, allowed %s' % ', '.join(formats.keys()))
 
