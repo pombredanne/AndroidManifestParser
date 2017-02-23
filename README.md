@@ -1,7 +1,7 @@
 # AndroidManifestParser
 Parses an already binary decoded Android Manifest
 
-
+## Usage
 ```
 usage: parser.py [-h] [-i FILE] [-o FILE] [-f FMT] [-v] [-q]
 
@@ -11,7 +11,7 @@ optional arguments:
                         Input file, stdin if none
   -o FILE, --output FILE
                         Output file, stdout if none
-  -f FMT, --format FMT  Output format, default is TEXT, allowed TEXT
+  -f FMT, --format FMT  Output format, default is TEXT, allowed TEXT, HTML
   -v                    Increase output verbosity (default=ERROR)
   -q                    Decrease output verbosity
 ```
