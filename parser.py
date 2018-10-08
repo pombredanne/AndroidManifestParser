@@ -173,9 +173,11 @@ def parse(xmlString):
     attr = sanitize(application.items())
     backup = not ('allowBackup' in attr.keys() and attr['allowBackup'].lower()=='false')
     debug = ('debuggable' in attr.keys() and attr['debuggable'].lower()=='true')
+    appPermission = '' if not 'permission' in attr.keys() else attr['permission']
 
     results[GENERAL][0]['Backup allowed'] = backup
     results[GENERAL][0]['Debuggable'] = debug
+    results[GENERAL][0]['Permission'] = appPermission
 
     if not 'name' in attr.keys():
         attr['name'] = '__UNDEFINED__'
@@ -280,6 +282,8 @@ def parse(xmlString):
             intentFilters = list(set(intentFilters))
             aDict['Intent filters'] = ', '.join(intentFilters)
 
+        aDict['Permission'] = (appPermission) if not  'permission' in attr.keys() else ('[F] %s' % attr['permission'])
+        
         results[ACTIVITIES].append(aDict)
 
 
